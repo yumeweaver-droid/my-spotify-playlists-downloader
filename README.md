@@ -1,9 +1,12 @@
-# My_Spotify_Playlists_Downloader
+# My Spotify Playlists Downloader
 
 Documentation is available in multiple languages:
 
 - [English](docs/en/README.md)
 - [Español](docs/es/README.md)
+- [Italiano](docs/it/README.md)
+- [Português](docs/pt-br/README.md)
+- [Français](docs/fr/README.md)
 
 ## Trademark disclaimer
 

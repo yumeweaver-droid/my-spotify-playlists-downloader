@@ -1,6 +1,6 @@
-# My_Spotify_Playlists_Downloader
+# My Spotify Playlists Downloader
 
-Exporta tus listas de reproducción de Spotify a archivos JSON para respaldo, análisis o migración.
+Exporta la información de tus listas de reproducción de Spotify a archivos JSON para respaldo, análisis o migración.
 
 ---
 
@@ -44,7 +44,6 @@ Instala las dependencias con:
 
 ```shell
 pip install -r requirements.txt
-
 ```
 
 ---
@@ -72,7 +71,7 @@ pip install -r requirements.txt
 
     - `SPOTIFY_CLIENT_ID`
     - `SPOTIFY_CLIENT_SECRET`
-    - `SPOTIFY_REDIRECT_URI`  (debe coincidir exactamente con la configuración de tu app en Spotify, por
+    - `SPOTIFY_REDIRECT_URI` (debe coincidir exactamente con la configuración de tu app en Spotify, por
       ejemplo <http://127.0.0.1:8888/callback>)
 
    Variables opcionales:
@@ -81,6 +80,7 @@ pip install -r requirements.txt
     - `OUTPUT_PREFIX_SPLIT`: Prefijo para archivos en modo dividido
     - `OUTPUT_PREFIX_SINGLE`: Prefijo para el archivo único exportado
     - `LOG_DIR`: Directorio donde se almacenarán los logs (default: ubicación del script)
+    - `LOG_LEVEL`: Nivel de log (default: INFO, puede ser DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
 ### Configuración de Cuenta de Desarrollador de Spotify
 
@@ -107,12 +107,6 @@ python my_spotify_playlists_downloader.py --split
 
 ```shell
 python my_spotify_playlists_downloader.py --output_dir ./my_exports
-```
-
-### Establecer nivel de log en DEBUG para mayor detalle
-
-```shell
-python my_spotify_playlists_downloader.py --loglevel DEBUG
 ```
 
 ---

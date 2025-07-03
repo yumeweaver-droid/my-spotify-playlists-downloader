@@ -1,6 +1,6 @@
-# My_Spotify_Playlists_Downloader
+# My Spotify Playlists Downloader
 
-Exports your Spotify playlists to JSON files for backup, analysis, or migration purposes.
+Exports your Spotify playlists information to JSON files for backup, analysis, or migration purposes.
 
 ---
 
@@ -79,6 +79,7 @@ pip install -r requirements.txt
     - `OUTPUT_PREFIX_SPLIT`: Prefix for output files in split mode
     - `OUTPUT_PREFIX_SINGLE`: Prefix for single output file
     - `LOG_DIR`: Directory where logs will be stored (default: script location)
+    - `LOG_LEVEL`: Logging level (default: INFO, can be DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
 ### Spotify Developer account setup
 
@@ -108,10 +109,6 @@ python my_spotify_playlists_downloader.py --output_dir ./my_exports
 ```
 
 ### Set logging level to DEBUG for detailed logs
-
-```shell
-python my_spotify_playlists_downloader.py --loglevel DEBUG
-```
 
 ---
 
