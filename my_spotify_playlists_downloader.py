@@ -281,7 +281,7 @@ def export_playlists(sp: spotipy.Spotify, split: bool, output_dir: Path,
             export_filename = f"{output_prefix_split}{sanitize_playlist_name(playlist_name)}.json"
             filename = export_filename
             filepath = output_dir / filename
-            filepath.write_text(json.dumps(playlist_obj, ensure_ascii=False, indent=4), encoding='utf-8')
+            filepath.write_text(json.dumps([playlist_obj], ensure_ascii=False, indent=4), encoding='utf-8')
             logger.info(f"Saved playlist to {filepath}")
         else:
             export.append(playlist_obj)
