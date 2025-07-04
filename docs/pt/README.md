@@ -35,7 +35,7 @@ O projeto é publicado sob a licença MIT e destinado a uso educacional e pessoa
 
 ## Requisitos
 
-- Python 3.9 ou superior
+- Python 3.10 ou superior
 - Uma [conta de desenvolvedor Spotify](SPOTIFY_DEVELOPER_SETUP.md) para criar um aplicativo e obter seu Client ID e
   Client Secret
 

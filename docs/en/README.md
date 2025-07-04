@@ -35,7 +35,7 @@ The project is released under the MIT License and intended for educational and p
 
 ## Requirements
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - A [Spotify Developer account](SPOTIFY_DEVELOPER_SETUP.md) to create an app and obtain your Client ID and Client
   Secret
 

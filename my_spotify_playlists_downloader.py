@@ -45,8 +45,8 @@ from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
 # Ensure minimum Python version for compatibility
-if sys.version_info < (3, 9):
-    print("This script requires Python 3.9 or higher.")
+if sys.version_info < (3, 10):
+    print("This script requires Python 3.10 or higher.")
     sys.exit(1)
 
 
