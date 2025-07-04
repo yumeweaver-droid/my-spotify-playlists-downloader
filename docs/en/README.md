@@ -35,7 +35,7 @@ The project is released under the MIT License and intended for educational and p
 
 ## Requirements
 
-- Python 3.7 or higher
+- Python 3.9 or higher
 - A [Spotify Developer account](SPOTIFY_DEVELOPER_SETUP.md) to create an app and obtain your Client ID and Client
   Secret
 
@@ -66,14 +66,14 @@ pip install -r requirements.txt
 
 3. **Edit `.env` and set your variables**
 
-   At minimum:
+   **Required:**
 
     - `SPOTIFY_CLIENT_ID`
     - `SPOTIFY_CLIENT_SECRET`
     - `SPOTIFY_REDIRECT_URI` (must match exactly with what is set in your Spotify app settings,
       e.g. <http://127.0.0.1:8888/callback>)
 
-   Optional variables:
+   **Optional:**
 
     - `OUTPUT_DIR`: Directory where outputs will be saved (default: ./playlists)
     - `OUTPUT_PREFIX_SPLIT`: Prefix for output files in split mode
@@ -159,7 +159,8 @@ Each exported playlist object includes:
 
 ---
 
-**Disclaimer:**  
+## Disclaimer
+
 This script is provided for educational purposes only.  
 Use it responsibly with your own Spotify account.  
 The author assumes no liability for misuse or for any data loss caused by its usage.  

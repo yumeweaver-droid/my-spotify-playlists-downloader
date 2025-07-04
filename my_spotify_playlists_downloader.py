@@ -45,8 +45,8 @@ from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
 # Ensure minimum Python version for compatibility
-if sys.version_info < (3, 7):
-    print("This script requires Python 3.7 or higher.")
+if sys.version_info < (3, 9):
+    print("This script requires Python 3.9 or higher.")
     sys.exit(1)
 
 
@@ -352,11 +352,12 @@ def main():
     # Pass playlist_name filter if provided and not blank
     playlist_name_filter = args.playlist_name if args.playlist_name and args.playlist_name.strip() else None
 
+    # Export playlists
     total_playlists, total_tracks = export_playlists(
         sp, args.split, output_dir, output_prefix_split, output_prefix_single, playlist_name_filter, logger)
 
     elapsed_time = time.time() - start_time
-    logger.info(f"Script completed in {elapsed_time:.2f} seconds.")
+    logger.info(f"Script execution completed in: {elapsed_time:.2f} seconds.")
     logger.info(f"Total playlists exported: {total_playlists}")
     logger.info(f"Total tracks exported: {total_tracks}")
 

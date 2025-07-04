@@ -35,7 +35,7 @@ Il progetto è rilasciato sotto licenza MIT ed è destinato a un uso educativo e
 
 ## Requisiti
 
-- Python 3.7 o superiore
+- Python 3.9 o superiore
 - Un [account sviluppatore Spotify](SPOTIFY_DEVELOPER_SETUP.md) per creare un'app e ottenere Client ID e Client Secret
 
 Installa le dipendenze con:
