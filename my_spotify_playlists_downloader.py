@@ -40,6 +40,7 @@ import time
 from pathlib import Path
 
 import spotipy
+import unicodedata
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -118,6 +119,43 @@ def sanitize_filename(name: str) -> str:
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
 
+def normalize_playlist_name(name: str) -> str:
+    """
+    Normalize a playlist name for comparison: strip, lowercase, remove extra spaces.
+
+    Args:
+        name (str): Playlist name to normalize.
+    Returns:
+        str: Normalized name for matching.
+    """
+    if not name:
+        return ''
+    return ' '.join(name.strip().lower().split())
+
+
+def sanitize_playlist_name(name: str) -> str:
+    """
+    Sanitize a playlist name to be safe for filenames, removing invalid/emoji characters,
+    but keeping accents, original case, and trimming spaces.
+
+    Args:
+        name (str): Original playlist name.
+    Returns:
+        str: Sanitized playlist name.
+    """
+
+    # Remove emoji and non-printable characters
+    def is_valid_char(c):
+        cat = unicodedata.category(c)
+        # Exclude emoji (So, Sk, Cs, Co, Cn), but keep accents and printable letters/numbers
+        return not (cat.startswith('C') or cat.startswith('S'))
+
+    name = ''.join(c for c in name if is_valid_char(c))
+    # Remove invalid filename chars (but keep accents)
+    name = re.sub(r'[\\/*?:"<>|]', '', name)
+    return name.strip()
+
+
 def get_all_playlists(sp: spotipy.Spotify, logger) -> list:
     """
     Retrieve all playlists from the current user's Spotify account.
@@ -177,9 +215,10 @@ def get_playlist_tracks(sp: spotipy.Spotify, playlist_id: str, logger) -> list:
 
 
 def export_playlists(sp: spotipy.Spotify, split: bool, output_dir: Path,
-                     output_prefix_split: str, output_prefix_single: str, logger):
+                     output_prefix_split: str, output_prefix_single: str, playlist_name_filter: str, logger):
     """
     Export all playlists to JSON files, either as individual files or a single combined file.
+    Optionally filter by normalized playlist name.
 
     Args:
         sp (spotipy.Spotify): Authenticated Spotify client.
@@ -187,6 +226,7 @@ def export_playlists(sp: spotipy.Spotify, split: bool, output_dir: Path,
         output_dir (Path): Directory to save output files.
         output_prefix_split (str): Prefix for split output filenames.
         output_prefix_single (str): Prefix for single output filename.
+        playlist_name_filter (str): Normalized playlist name to filter.
         logger (Logger): Logger instance for logging.
 
     Returns:
@@ -199,7 +239,26 @@ def export_playlists(sp: spotipy.Spotify, split: bool, output_dir: Path,
     output_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"Output directory set to: {output_dir}")
 
+    # Normalize filter if provided
+    normalized_filter = normalize_playlist_name(playlist_name_filter) if playlist_name_filter else None
+    if normalized_filter:
+        logger.info(f"Running with playlist_name filter: '{playlist_name_filter}' (normalized: '{normalized_filter}')")
+    filtered_playlists = []
     for playlist in playlists:
+        normalized_name = normalize_playlist_name(playlist['name'])
+        if normalized_filter:
+            if normalized_name == normalized_filter:
+                filtered_playlists.append(playlist)
+        else:
+            filtered_playlists.append(playlist)
+
+    logger.info(f"Number of playlists to export: {len(filtered_playlists)}")
+
+    if normalized_filter and not filtered_playlists:
+        logger.error(f"No playlist matched the name: '{playlist_name_filter}' (normalized: '{normalized_filter}')")
+        return 0, 0
+
+    for playlist in filtered_playlists:
         playlist_name = playlist['name']
         owner_name = playlist['owner']['display_name']
         owner_id = playlist['owner']['id']
@@ -219,20 +278,25 @@ def export_playlists(sp: spotipy.Spotify, split: bool, output_dir: Path,
         }
 
         if split:
-            filename = f"{output_prefix_split}{sanitize_filename(playlist_name)}.json"
+            export_filename = f"{output_prefix_split}{sanitize_playlist_name(playlist_name)}.json"
+            filename = export_filename
             filepath = output_dir / filename
             filepath.write_text(json.dumps(playlist_obj, ensure_ascii=False, indent=4), encoding='utf-8')
             logger.info(f"Saved playlist to {filepath}")
         else:
             export.append(playlist_obj)
 
-    if not split:
-        filename = f"{output_prefix_single}spotify_playlists.json"
+    if not split and filtered_playlists:
+        if normalized_filter:
+            export_filename = f"{output_prefix_single}filtered_spotify_playlists.json"
+        else:
+            export_filename = f"{output_prefix_single}spotify_playlists.json"
+        filename = export_filename
         filepath = output_dir / filename
         filepath.write_text(json.dumps(export, ensure_ascii=False, indent=4), encoding='utf-8')
         logger.info(f"Export completed. File saved as {filepath}")
 
-    return len(playlists), total_tracks
+    return len(filtered_playlists), total_tracks
 
 
 def main():
@@ -249,6 +313,10 @@ def main():
                         help='Export each playlist as an individual JSON file')
     parser.add_argument('--output_dir', type=str, default=None,
                         help='Override the output directory path defined in .env or default.')
+    parser.add_argument('--playlist_name', type=str, default=None,
+                        help='Export only the playlist with this name (case-insensitive, normalized).')
+    parser.add_argument('--clean_output', action='store_true',
+                        help='Delete all JSON files in the output directory before exporting playlists.')
     args = parser.parse_args()
 
     # Determine log directory and logging
@@ -270,8 +338,22 @@ def main():
         scope="playlist-read-private"
     ))
 
-    total_playlists, total_tracks = export_playlists(sp, args.split, output_dir,
-                                                     output_prefix_split, output_prefix_single, logger)
+    # Clean output directory if requested
+    if args.clean_output:
+        json_files = list(output_dir.glob('*.json'))
+        for f in json_files:
+            try:
+                f.unlink()
+                logger.debug(f"Deleted old output file: {f}")
+            except Exception as e:
+                logger.error(f"Failed to delete {f}: {e}")
+        logger.info(f"Output directory cleaned: {output_dir}")
+
+    # Pass playlist_name filter if provided and not blank
+    playlist_name_filter = args.playlist_name if args.playlist_name and args.playlist_name.strip() else None
+
+    total_playlists, total_tracks = export_playlists(
+        sp, args.split, output_dir, output_prefix_split, output_prefix_single, playlist_name_filter, logger)
 
     elapsed_time = time.time() - start_time
     logger.info(f"Script completed in {elapsed_time:.2f} seconds.")

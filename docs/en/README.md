@@ -108,7 +108,41 @@ python my_spotify_playlists_downloader.py --split
 python my_spotify_playlists_downloader.py --output_dir ./my_exports
 ```
 
-### Set logging level to DEBUG for detailed logs
+### Export only a specific playlist by name
+
+```shell
+python my_spotify_playlists_downloader.py --playlist_name "My Favorite Playlist"
+```
+
+- The script will export only the playlist whose name matches (case-insensitive, normalized) the value provided.
+- If no playlist matches, an error will be logged and no file will be exported.
+
+### Clean output directory before exporting
+
+```shell
+python my_spotify_playlists_downloader.py --clean_output
+```
+
+- All JSON files in the output directory will be deleted before exporting new playlists.
+- Useful to avoid mixing old and new exports.
+
+### Combine options
+
+You can combine these options as needed. For example, to clean the output directory and export only a specific playlist
+as a split file:
+
+```shell
+python my_spotify_playlists_downloader.py --split --playlist_name "My Favorite Playlist" --clean_output
+```
+
+---
+
+## Additional Notes
+
+- Playlist names used for filenames are sanitized: invalid filename characters and emoji are removed, but accents and
+  original case are preserved.
+- When using --playlist_name, the script logs the normalized filter and the number of playlists to be exported.
+- When using --clean_output, the script logs each deleted file and confirms the cleaning action.
 
 ---
 
