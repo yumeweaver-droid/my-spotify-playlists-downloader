@@ -26,8 +26,8 @@ Usage:
     python my_spotify_playlists_downloader.py [--split] [--output_dir /path/to/dir]
 
 Options:
-    --split           Export each playlist as an individual JSON file named after the playlist (sanitized).
-    --output_dir DIR  Override the output directory path defined in .env or default.
+    --split             Export each playlist as an individual JSON file named after the playlist (sanitized).
+    --output_dir DIR    Override the output directory path defined in .env or default.
 """
 
 import argparse
@@ -330,12 +330,15 @@ def main():
     output_prefix_split = config["OUTPUT_PREFIX_SPLIT"] or ""
     output_prefix_single = config["OUTPUT_PREFIX_SINGLE"] or ""
 
-    # Initialize Spotify client with OAuth
+    # Initialize Spotify client with OAuth for manual URL pasting
+    # This will print a URL to the console. You must copy it to your browser,
+    # authorize the app, and then paste the final redirect URL back into the console.
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
         client_id=config["SPOTIFY_CLIENT_ID"],
         client_secret=config["SPOTIFY_CLIENT_SECRET"],
         redirect_uri=config["SPOTIFY_REDIRECT_URI"],
-        scope="playlist-read-private"
+        scope="playlist-read-private",
+        open_browser=False  # <-- THIS IS THE MODIFIED LINE
     ))
 
     # Clean output directory if requested
